@@ -1,0 +1,625 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Calendar, 
+  BarChart3, 
+  FileText, 
+  HelpCircle, 
+  Check, 
+  Instagram, 
+  Facebook, 
+  MessageCircle, 
+  ChevronDown, 
+  ChevronUp,
+  Phone,
+  ArrowRight,
+  Sparkles,
+  Sun,
+  Moon,
+  Zap,
+  Crown,
+  Lock,
+  Unlock
+} from 'lucide-react';
+
+// Componente principal
+export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [loginError, setLoginError] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // Estados de la app interna
+  const [activeTab, setActiveTab] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Simular carga inicial para animaciones
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (passwordInput === 'Polero2025') {
+      setIsAuthenticated(true);
+      setLoginError(false);
+    } else {
+      setLoginError(true);
+      // Efecto de vibración en error (simulado visualmente con estado)
+      setTimeout(() => setLoginError(false), 500);
+    }
+  };
+
+  const handleTabChange = (tab) => {
+    if (activeTab === tab) {
+      setActiveTab(null);
+    } else {
+      setActiveTab(tab);
+      setTimeout(() => {
+        const element = document.getElementById('content-area');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  };
+
+  const theme = {
+    bg: isDarkMode ? 'bg-zinc-950' : 'bg-white',
+    text: isDarkMode ? 'text-white' : 'text-gray-900',
+    selection: isDarkMode ? 'selection:bg-orange-500 selection:text-white' : 'selection:bg-orange-100',
+    blob1: isDarkMode ? 'bg-orange-600' : 'bg-orange-200',
+    blob2: isDarkMode ? 'bg-yellow-600' : 'bg-yellow-200',
+    logoBox: isDarkMode 
+      ? 'bg-zinc-900 shadow-orange-900/20 border-zinc-800' 
+      : 'bg-white shadow-orange-100 border-orange-100',
+    subText: isDarkMode ? 'text-zinc-400' : 'text-gray-500',
+    subTextLight: isDarkMode ? 'text-zinc-500' : 'text-gray-400',
+    emptyState: isDarkMode ? 'text-zinc-600' : 'text-gray-300',
+    input: isDarkMode 
+      ? 'bg-zinc-900 border-zinc-700 text-white focus:border-orange-500' 
+      : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-orange-500'
+  };
+
+  // --- PANTALLA DE LOGIN ---
+  if (!isAuthenticated) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center p-4 transition-colors duration-700 ${theme.bg} ${theme.selection}`}>
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+          body { font-family: 'Montserrat', sans-serif; }
+          .animate-shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+          }
+          @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+          }
+        `}</style>
+        
+        {/* Fondo decorativo */}
+        <div className={`absolute top-0 left-0 w-full h-full overflow-hidden z-0`}>
+           <div className={`absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full filter blur-[120px] opacity-20 animate-float ${theme.blob1}`}></div>
+           <div className={`absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full filter blur-[120px] opacity-10 animate-float ${theme.blob2}`}></div>
+        </div>
+
+        <div className={`relative z-10 w-full max-w-md p-8 rounded-3xl shadow-2xl border flex flex-col items-center text-center ${theme.logoBox} ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'} transition-all duration-1000`}>
+          <div className="mb-6 bg-orange-500/10 p-4 rounded-full text-orange-500 border border-orange-500/20">
+            <Lock size={32} />
+          </div>
+          
+          <h1 className={`text-2xl font-bold mb-2 ${theme.text}`}>Bienvenido, Alacant Águilas</h1>
+          <p className={`text-sm mb-8 ${theme.subText}`}>Introduce tu contraseña de acceso para ver el panel.</p>
+
+          <form onSubmit={handleLogin} className="w-full space-y-4">
+            <div className={`relative ${loginError ? 'animate-shake' : ''}`}>
+              <input 
+                type="password" 
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                placeholder="Contraseña"
+                className={`w-full px-4 py-3 rounded-xl border outline-none transition-all ${theme.input} ${loginError ? 'border-red-500 text-red-500 placeholder-red-400' : ''}`}
+              />
+            </div>
+            
+            <button 
+              type="submit"
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-orange-500/30 flex justify-center items-center gap-2 group"
+            >
+              <span>Acceder</span>
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform"/>
+            </button>
+          </form>
+          
+          <p className="mt-6 text-xs text-zinc-500">
+            Área protegida por Agencia Social Media
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // --- DASHBOARD PRINCIPAL ---
+  return (
+    <div className={`min-h-screen font-sans transition-colors duration-700 ${theme.bg} ${theme.text} ${theme.selection} ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+      
+      {/* Botón Toggle Dark/Light Mode */}
+      <button 
+        onClick={() => setIsDarkMode(!isDarkMode)}
+        className={`absolute top-6 left-6 z-50 p-3 rounded-full transition-all duration-300 ${
+          isDarkMode 
+            ? 'bg-zinc-800 text-orange-400 hover:bg-zinc-700 border border-zinc-700' 
+            : 'bg-white text-orange-500 shadow-lg shadow-orange-100 hover:bg-orange-50 border border-orange-100'
+        }`}
+        title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+      >
+        {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+      </button>
+
+      {/* Header / Bienvenida */}
+      <header className="pt-12 pb-8 px-4 md:px-8 max-w-6xl mx-auto text-center relative overflow-hidden">
+        
+        {/* Elementos decorativos de fondo */}
+        <div className={`absolute top-0 left-1/4 w-64 h-64 rounded-full filter blur-[100px] opacity-20 animate-float transition-colors duration-700 ${theme.blob1}`}></div>
+        <div className={`absolute bottom-0 right-1/4 w-64 h-64 rounded-full filter blur-[100px] opacity-10 animate-float transition-colors duration-700 ${theme.blob2}`} style={{animationDelay: '2s'}}></div>
+
+        <div className="relative z-10 flex flex-col items-center">
+          {/* Logo Placeholder */}
+          <div className={`mb-6 p-4 rounded-2xl shadow-2xl border transform transition-all hover:scale-105 duration-300 ${theme.logoBox}`}>
+             <div className={`flex items-center gap-2 text-2xl font-bold tracking-wider ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+               <span className="text-orange-500 text-4xl">🍦</span> HELADERÍA <span className="text-orange-500">ALACANT</span>
+             </div>
+             <p className={`text-xs mt-1 uppercase tracking-widest text-center ${theme.subTextLight}`}>Águilas, Murcia</p>
+          </div>
+
+          <h1 className="text-3xl md:text-4xl font-bold mb-3">
+            Hola equipo, <span className="text-orange-500">bienvenidos a vuestro espacio.</span>
+          </h1>
+          <p className={`max-w-xl mx-auto text-lg font-light ${theme.subText}`}>
+            Aquí podéis consultar el estado de vuestra estrategia digital, ver resultados y planificar el futuro.
+          </p>
+        </div>
+      </header>
+
+      {/* Grid de Navegación */}
+      <nav className="px-4 max-w-6xl mx-auto mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <NavButton 
+            id="plan" 
+            title="Mi Plan" 
+            icon={<FileText size={24} />} 
+            desc="Detalles de contratación"
+            active={activeTab === 'plan'} 
+            onClick={() => handleTabChange('plan')}
+            isDarkMode={isDarkMode}
+          />
+          <NavButton 
+            id="report" 
+            title="Informe del mes" 
+            icon={<BarChart3 size={24} />} 
+            desc="Resultados y métricas"
+            active={activeTab === 'report'} 
+            onClick={() => handleTabChange('report')}
+            isDarkMode={isDarkMode}
+          />
+          <NavButton 
+            id="schedule" 
+            title="Planificación" 
+            icon={<Calendar size={24} />} 
+            desc="Calendario de contenidos"
+            active={activeTab === 'schedule'} 
+            onClick={() => handleTabChange('schedule')}
+            isDarkMode={isDarkMode}
+          />
+          <NavButton 
+            id="help" 
+            title="¿Necesitas ayuda?" 
+            icon={<HelpCircle size={24} />} 
+            desc="Soporte y dudas"
+            active={activeTab === 'help'} 
+            onClick={() => handleTabChange('help')}
+            isDarkMode={isDarkMode}
+          />
+        </div>
+      </nav>
+
+      {/* Área de Contenido Dinámico */}
+      <main id="content-area" className="px-4 max-w-5xl mx-auto pb-20 min-h-[400px]">
+        {activeTab === 'plan' && <PlanSection isDarkMode={isDarkMode} />}
+        {activeTab === 'report' && <ReportSection isDarkMode={isDarkMode} />}
+        {activeTab === 'schedule' && <ScheduleSection isDarkMode={isDarkMode} />}
+        {activeTab === 'help' && <HelpSection isDarkMode={isDarkMode} />}
+        
+        {!activeTab && (
+          <div className={`text-center py-12 flex flex-col items-center animate-pulse ${theme.emptyState}`}>
+            <Sparkles size={48} className={`mb-4 ${isDarkMode ? 'text-zinc-700' : 'text-orange-200'}`} />
+            <p>Selecciona una opción del menú para comenzar</p>
+          </div>
+        )}
+      </main>
+
+    </div>
+  );
+}
+
+// --- Componentes de Sección ---
+
+function PlanSection({ isDarkMode }) {
+  const styles = {
+    card: isDarkMode 
+      ? 'bg-zinc-900 shadow-black/50 border-zinc-800' 
+      : 'bg-white shadow-orange-50 border-orange-100',
+    headerGradient: 'bg-gradient-to-r from-orange-600 to-orange-500',
+    priceTag: isDarkMode 
+      ? 'bg-black/20 border-white/10' 
+      : 'bg-white/20 border-white/30',
+    text: isDarkMode ? 'text-zinc-400' : 'text-gray-600',
+    subHeader: isDarkMode ? 'text-orange-400' : 'text-orange-500',
+    footer: isDarkMode ? 'border-zinc-800 text-zinc-500' : 'border-gray-100 text-gray-400',
+    iconHover: isDarkMode ? 'hover:text-white' : 'hover:text-gray-900',
+    sectionTitle: isDarkMode ? 'text-white' : 'text-gray-800'
+  };
+
+  return (
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      
+      {/* 1. PLAN ACTUAL */}
+      <div className={`rounded-3xl shadow-2xl overflow-hidden border transition-colors duration-300 ${styles.card}`}>
+        <div className={`${styles.headerGradient} p-6 text-white flex justify-between items-center flex-wrap gap-4`}>
+          <div>
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+               Plan Básico Social Media
+               <span className="bg-white/20 text-xs px-2 py-0.5 rounded-full border border-white/20 uppercase tracking-wider font-semibold">Tu plan</span>
+            </h2>
+            <p className="opacity-90 text-sm">Actualmente activo</p>
+          </div>
+          <div className={`backdrop-blur-sm px-4 py-2 rounded-xl border ${styles.priceTag}`}>
+            <span className="text-2xl font-bold">60€</span>/mes
+          </div>
+        </div>
+        
+        <div className="p-8">
+          <p className={`mb-6 ${styles.text}`}>
+            Este plan está diseñado para mantener una presencia constante y profesional en vuestras redes, optimizando la visibilidad de la heladería.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <h3 className={`font-semibold uppercase tracking-wider text-sm mb-2 ${styles.subHeader}`}>Contenido Visual</h3>
+              <FeatureItem text="Publicación semanal (Foto o Carrusel)" isDarkMode={isDarkMode} />
+              <FeatureItem text="Edición profesional de fotografía y video" isDarkMode={isDarkMode} />
+              <FeatureItem text="Creación de 1 Reel cada 2 semanas" isDarkMode={isDarkMode} />
+              <FeatureItem text="Historias promocionales (Fines de semana)" isDarkMode={isDarkMode} />
+            </div>
+            
+            <div className="space-y-4">
+              <h3 className={`font-semibold uppercase tracking-wider text-sm mb-2 ${styles.subHeader}`}>Gestión y Estrategia</h3>
+              <FeatureItem text="Informe mensual de resultados" isDarkMode={isDarkMode} />
+              <FeatureItem text="Gestión Meta Business (FB & IG)" isDarkMode={isDarkMode} />
+              <FeatureItem text="Optimización de biografía y perfiles" isDarkMode={isDarkMode} />
+              <FeatureItem text="Atención a tendencias locales" isDarkMode={isDarkMode} />
+            </div>
+          </div>
+
+          <div className={`mt-8 pt-6 border-t flex items-center justify-between text-sm ${styles.footer}`}>
+            <span>Próxima renovación: 01 del siguiente mes</span>
+            <div className="flex gap-2">
+              <Instagram size={18} className={`transition-colors ${styles.iconHover}`} />
+              <Facebook size={18} className={`transition-colors ${styles.iconHover}`} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. MEJORAR PLAN */}
+      <div>
+        <h3 className={`text-xl font-bold mb-6 flex items-center gap-2 ${styles.sectionTitle}`}>
+           <Sparkles className="text-orange-500 fill-orange-500" size={20}/>
+           Mejorar mi plan
+        </h3>
+        
+        <div className="grid md:grid-cols-2 gap-6">
+           {/* Plan Medio */}
+           <UpgradeCard 
+             title="Plan Medio" 
+             price="120€" 
+             icon={<Zap className="text-yellow-400" size={24} />}
+             description="Para negocios que quieren acelerar su crecimiento."
+             isDarkMode={isDarkMode}
+             isComingSoon={true}
+           />
+           
+           {/* Plan Asistencia Completa */}
+           <UpgradeCard 
+             title="Asistencia Completa" 
+             price="290€" 
+             icon={<Crown className="text-orange-500" size={24} />}
+             description="La solución definitiva. Nos convertimos en tu departamento de marketing."
+             isDarkMode={isDarkMode}
+             isPremium={true}
+             isComingSoon={true}
+           />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function UpgradeCard({ title, price, icon, description, features = [], isDarkMode, isPremium = false, isComingSoon = false }) {
+  const styles = {
+    card: isDarkMode 
+      ? `bg-zinc-900 border-zinc-800 ${isPremium ? 'border-orange-500/50 shadow-orange-900/20' : ''}`
+      : `bg-white border-gray-100 ${isPremium ? 'border-orange-200 shadow-orange-100' : ''}`,
+    title: isDarkMode ? 'text-white' : 'text-gray-900',
+    desc: isDarkMode ? 'text-zinc-400' : 'text-gray-500',
+    price: isDarkMode ? 'text-white' : 'text-gray-900',
+    button: isPremium
+      ? 'bg-gradient-to-r from-orange-600 to-orange-500 text-white hover:shadow-lg hover:shadow-orange-500/20'
+      : (isDarkMode ? 'bg-zinc-800 text-white hover:bg-zinc-700' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'),
+    overlay: isDarkMode ? 'bg-zinc-900/90' : 'bg-white/90'
+  };
+
+  return (
+    <div className={`relative p-6 rounded-3xl border shadow-xl flex flex-col transition-all duration-300 hover:scale-[1.02] overflow-hidden ${styles.card}`}>
+      {isPremium && !isComingSoon && (
+        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+          MÁS RECOMENDADO
+        </div>
+      )}
+      
+      <div className="flex justify-between items-start mb-4 opacity-50 filter blur-[1px]">
+        <div className={`p-3 rounded-2xl ${isDarkMode ? 'bg-zinc-800' : 'bg-orange-50'}`}>
+          {icon}
+        </div>
+        <div className="text-right">
+          <span className={`text-2xl font-bold ${styles.price}`}>{price}</span>
+          <span className={`text-xs ${styles.desc}`}>/mes</span>
+        </div>
+      </div>
+
+      <h3 className={`text-xl font-bold mb-2 ${styles.title}`}>{title}</h3>
+      <p className={`text-sm mb-6 h-10 ${styles.desc}`}>{description}</p>
+
+      {/* Contenido normal (oculto si isComingSoon) o Bloqueo */}
+      {isComingSoon ? (
+        <div className={`absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center backdrop-blur-sm ${styles.overlay}`}>
+          <div className="mb-4 bg-orange-500/10 p-4 rounded-full text-orange-500 animate-pulse">
+            <Lock size={28} />
+          </div>
+          <h4 className="font-bold text-lg mb-2 text-orange-500">Próximamente</h4>
+          <p className={`text-sm leading-relaxed ${isDarkMode ? 'text-zinc-300' : 'text-gray-600'}`}>
+            "Lo mejor está por venir. Este plan aun no esta disponible, pero estamos trabajando en el para darte lo que mereces, lo mejor."
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="space-y-3 mb-8 flex-grow">
+            {features.map((feat, idx) => (
+              <FeatureItem key={idx} text={feat} isDarkMode={isDarkMode} />
+            ))}
+          </div>
+
+          <button className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${styles.button}`}>
+            Me interesa
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+function ReportSection({ isDarkMode }) {
+  const styles = {
+    card: isDarkMode 
+      ? 'bg-zinc-900 shadow-black/50 border-zinc-800' 
+      : 'bg-white shadow-orange-50 border-orange-100',
+    accent: isDarkMode ? 'opacity-10' : 'opacity-50',
+    iconBg: isDarkMode ? 'bg-orange-500/20 border-orange-500/30 text-orange-400' : 'bg-orange-100 text-orange-500 border-transparent',
+    title: isDarkMode ? 'text-white' : 'text-gray-900',
+    text: isDarkMode ? 'text-zinc-400' : 'text-gray-600',
+    badge: isDarkMode ? 'bg-zinc-800 text-zinc-400 border-zinc-700' : 'bg-gray-50 text-gray-500 border-gray-200'
+  };
+
+  return (
+    <div className={`rounded-3xl p-8 md:p-12 text-center shadow-2xl border animate-in fade-in slide-in-from-bottom-4 duration-500 relative overflow-hidden transition-colors duration-300 ${styles.card}`}>
+       {/* Background accent */}
+       <div className={`absolute top-0 right-0 w-32 h-32 bg-orange-500 rounded-bl-full ${styles.accent}`}></div>
+
+       <div className="relative z-10 max-w-lg mx-auto">
+         <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border ${styles.iconBg}`}>
+            <Calendar size={40} />
+         </div>
+         <h2 className={`text-2xl font-bold mb-4 ${styles.title}`}>¿A lo mejor vamos demasiado rápido? 🚀</h2>
+         <p className={`mb-8 leading-relaxed ${styles.text}`}>
+           Todavía no llevamos más de un mes trabajando juntos. Para poder ofrecerte datos reales y valiosos, necesitamos recopilar métricas de un ciclo completo.
+         </p>
+         <div className={`inline-block px-6 py-3 rounded-lg text-sm border ${styles.badge}`}>
+           El primer informe estará disponible el día 1 del próximo mes.
+         </div>
+       </div>
+    </div>
+  );
+}
+
+function ScheduleSection({ isDarkMode }) {
+  const styles = {
+    card: isDarkMode 
+      ? 'bg-zinc-900 shadow-black/50 border-zinc-800' 
+      : 'bg-white shadow-orange-50 border-orange-100',
+    header: isDarkMode ? 'bg-zinc-800/50 border-zinc-800 text-zinc-200' : 'bg-gray-50 border-gray-100 text-gray-700',
+    link: isDarkMode ? 'text-orange-400 hover:text-orange-300' : 'text-orange-500 hover:text-orange-600',
+    iframeContainer: isDarkMode ? 'bg-zinc-800' : 'bg-gray-100',
+    // Filtro para intentar oscurecer el iframe en modo dark, no perfecto pero mejor
+    iframeFilter: isDarkMode ? { filter: 'invert(1) hue-rotate(180deg)', opacity: 0.9 } : {}
+  };
+
+  return (
+    <div className={`flex flex-col h-[80vh] rounded-3xl shadow-2xl border overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 transition-colors duration-300 ${styles.card}`}>
+      <div className={`p-4 border-b flex justify-between items-center ${styles.header}`}>
+        <h3 className="font-bold flex items-center gap-2">
+          <Calendar size={18} className="text-orange-500"/> Calendario Editorial
+        </h3>
+        <a 
+          href="https://docs.google.com/spreadsheets/d/1SPqIjm01wgdDCiJBkJBpZ37wtKVT4IR738H8uwsaLpY/edit?usp=sharing" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className={`text-xs font-semibold flex items-center gap-1 transition-colors ${styles.link}`}
+        >
+          Abrir en Google Sheets <ArrowRight size={12}/>
+        </a>
+      </div>
+      <div className={`flex-grow relative ${styles.iframeContainer}`}>
+        <iframe 
+          src="https://docs.google.com/spreadsheets/d/1SPqIjm01wgdDCiJBkJBpZ37wtKVT4IR738H8uwsaLpY/preview?widget=true&headers=false" 
+          className="absolute inset-0 w-full h-full border-0"
+          title="Planificación de Contenidos"
+          style={styles.iframeFilter}
+        ></iframe>
+      </div>
+    </div>
+  );
+}
+
+function HelpSection({ isDarkMode }) {
+  const styles = {
+    title: isDarkMode ? 'text-zinc-100' : 'text-gray-800',
+    card: isDarkMode 
+      ? 'from-orange-600 to-orange-700 shadow-orange-900/50 border-orange-500/20' 
+      : 'from-orange-500 to-orange-600 shadow-orange-200 border-transparent',
+    waButton: isDarkMode ? 'bg-black/20 hover:bg-black/30 border-white/10' : 'bg-white/20 hover:bg-white/30 border-white/20'
+  };
+
+  return (
+    <div className="grid md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      
+      {/* Columna FAQ */}
+      <div className="md:col-span-2 space-y-4">
+        <h2 className={`text-xl font-bold mb-4 ${styles.title}`}>Preguntas Frecuentes</h2>
+        <FaqItem 
+          question="¿Por qué publicamos tan poco?" 
+          answer="No publicamos poco, publicamos estratégico. En el entorno actual, la saturación es real. Parece que publicar mucho va a ser mejor, pero a menudo cansa a la audiencia o el algoritmo lo penaliza como spam. Nuestras publicaciones están programadas estudiando los días y horas de máxima audiencia y alcance para garantizar los mejores resultados con cada pieza de contenido."
+          isDarkMode={isDarkMode}
+        />
+        {/* Se pueden añadir más FAQs aquí */}
+      </div>
+
+      {/* Columna Contacto */}
+      <div className="md:col-span-1">
+        <div className={`bg-gradient-to-br rounded-3xl p-6 text-white shadow-lg border ${styles.card}`}>
+          <h3 className="text-lg font-bold mb-2">Contacto Directo</h3>
+          <p className="text-orange-100 text-sm mb-6">Estamos a un mensaje de distancia para cualquier urgencia.</p>
+          
+          <div className="space-y-4">
+            <a href="https://wa.me/34000000000" className={`flex items-center gap-3 transition p-3 rounded-xl backdrop-blur-sm cursor-pointer border ${styles.waButton}`}>
+              <MessageCircle className="shrink-0" />
+              <div>
+                <p className="text-xs font-bold uppercase opacity-70">Whatsapp</p>
+                <p className="font-mono">XXX XXX XXX</p>
+              </div>
+            </a>
+            
+            <div className="flex items-center gap-3 p-3 opacity-60">
+              <Phone size={18}/>
+              <span className="text-sm">Lunes a Viernes 9:00 - 18:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- Componentes UI Auxiliares ---
+
+function NavButton({ id, title, icon, desc, active, onClick, isDarkMode }) {
+  const styles = {
+    active: isDarkMode 
+      ? 'bg-orange-600 text-white shadow-orange-900/40 border-orange-500' 
+      : 'bg-orange-500 text-white shadow-orange-200 border-transparent',
+    inactive: isDarkMode 
+      ? 'bg-zinc-900 hover:bg-zinc-800 text-zinc-400 border-zinc-800 hover:border-orange-500/50' 
+      : 'bg-white hover:bg-orange-50 text-gray-600 border-gray-100 hover:border-orange-200',
+    iconActive: 'bg-white/20',
+    iconInactive: isDarkMode 
+      ? 'bg-zinc-800 text-zinc-400 group-hover:text-orange-400 group-hover:bg-zinc-700' 
+      : 'bg-gray-50 text-orange-500 group-hover:bg-white',
+    titleHover: isDarkMode ? 'group-hover:text-white' : '',
+    descActive: 'text-orange-100',
+    descInactive: isDarkMode 
+      ? 'text-zinc-500 group-hover:text-zinc-400' 
+      : 'text-gray-400'
+  };
+
+  return (
+    <button 
+      onClick={onClick}
+      className={`relative p-6 rounded-2xl text-left transition-all duration-300 group border shadow-sm hover:shadow-md
+        ${active ? `${styles.active} scale-[1.02]` : styles.inactive}
+      `}
+    >
+      <div className={`mb-4 p-3 rounded-xl w-fit transition-colors duration-300 ${active ? styles.iconActive : styles.iconInactive}`}>
+        {icon}
+      </div>
+      <h3 className={`font-bold text-lg mb-1 ${!active && styles.titleHover}`}>{title}</h3>
+      <p className={`text-xs ${active ? styles.descActive : styles.descInactive}`}>{desc}</p>
+      
+      {/* Indicador visual de selección */}
+      {active && (
+        <div className={`absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 rotate-45 ${isDarkMode ? 'bg-orange-600' : 'bg-orange-500'}`}></div>
+      )}
+    </button>
+  );
+}
+
+function FeatureItem({ text, isDarkMode }) {
+  const styles = {
+    checkBg: isDarkMode ? 'bg-green-900/30 text-green-400 border-green-900/50' : 'bg-green-100 text-green-600 border-transparent',
+    text: isDarkMode ? 'text-zinc-300' : 'text-gray-700'
+  };
+
+  return (
+    <div className="flex items-start gap-3">
+      <div className={`mt-1 rounded-full p-0.5 shrink-0 border ${styles.checkBg}`}>
+        <Check size={14} strokeWidth={3} />
+      </div>
+      <span className={`font-medium text-sm ${styles.text}`}>{text}</span>
+    </div>
+  );
+}
+
+function FaqItem({ question, answer, isDarkMode }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const styles = {
+    container: isDarkMode 
+      ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' 
+      : 'bg-white border-gray-100',
+    question: isDarkMode ? 'text-zinc-200' : 'text-gray-800',
+    icon: isDarkMode ? 'text-zinc-600' : 'text-gray-400',
+    answer: isDarkMode ? 'text-zinc-400' : 'text-gray-600',
+    border: isDarkMode ? 'border-orange-500/50' : 'border-orange-200'
+  };
+
+  return (
+    <div className={`rounded-2xl border overflow-hidden shadow-sm hover:shadow-md transition-all ${styles.container}`}>
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between p-5 text-left"
+      >
+        <span className={`font-bold ${styles.question}`}>{question}</span>
+        {isOpen ? <ChevronUp className="text-orange-500" /> : <ChevronDown className={styles.icon} />}
+      </button>
+      
+      <div 
+        className={`px-5 text-sm leading-relaxed overflow-hidden transition-all duration-300 ease-in-out ${styles.answer}
+          ${isOpen ? 'max-h-96 pb-5 opacity-100' : 'max-h-0 opacity-0'}
+        `}
+      >
+        <div className={`pl-4 border-l-2 ${styles.border}`}>
+          {answer}
+        </div>
+      </div>
+    </div>
+  );
+}
