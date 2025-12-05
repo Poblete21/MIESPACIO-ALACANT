@@ -18,37 +18,192 @@ import {
   Zap,
   Crown,
   Lock,
-  Unlock
+  User,
+  LogOut,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
-// Componente principal
+// ==========================================
+// COMPONENTE PRINCIPAL (ENRUTADOR / LOGIN)
+// ==========================================
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [passwordInput, setPasswordInput] = useState('');
-  const [loginError, setLoginError] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
-
-  // Estados de la app interna
-  const [activeTab, setActiveTab] = useState(null);
+  const [user, setUser] = useState(null); // null = no logueado
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Simular carga inicial para animaciones
   useEffect(() => {
     setIsLoaded(true);
   }, []);
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (passwordInput === 'Polero2025') {
-      setIsAuthenticated(true);
-      setLoginError(false);
-    } else {
-      setLoginError(true);
-      // Efecto de vibración en error (simulado visualmente con estado)
-      setTimeout(() => setLoginError(false), 500);
+  const handleLogin = (username, password) => {
+    // Aquí es donde en el futuro conectarías con una base de datos real
+    if (username === 'ALACANTAGUILAS' && password === 'Polero2025') {
+      setUser({ id: 'alacant', name: 'Heladería Alacant' });
+      return true;
     }
+    return false;
   };
 
+  const handleLogout = () => {
+    setUser(null);
+  };
+
+  return (
+    <div className={`min-h-screen font-sans transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;900&display=swap');
+        body { font-family: 'Montserrat', sans-serif; background-color: #000; }
+        .animate-shake {
+          animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+          10%, 90% { transform: translate3d(-1px, 0, 0); }
+          20%, 80% { transform: translate3d(2px, 0, 0); }
+          30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+          40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        .glow-red {
+          box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+        }
+      `}</style>
+
+      {/* RENDERIZADO CONDICIONAL: Login o Dashboard */}
+      {!user ? (
+        <LoginPage onLogin={handleLogin} />
+      ) : (
+        <AlacantDashboard onLogout={handleLogout} />
+      )}
+    </div>
+  );
+}
+
+// ==========================================
+// PANTALLA DE LOGIN "MI ESPACIO" (ROJO/NEGRO)
+// ==========================================
+function LoginPage({ onLogin }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // Nuevo estado para mostrar contraseña
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    // Simular un pequeño tiempo de carga de red
+    setTimeout(() => {
+      const success = onLogin(username, password);
+      if (!success) {
+        setError(true);
+        setLoading(false);
+        // Quitar estado de error tras la animación
+        setTimeout(() => setError(false), 500);
+      }
+    }, 800);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-black text-white p-4 selection:bg-red-600 selection:text-white relative overflow-hidden">
+      
+      {/* Elementos de fondo "Cyberpunk/Minimal" */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-600 to-transparent opacity-50"></div>
+      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-red-900/20 rounded-full blur-[100px]"></div>
+      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-red-800/10 rounded-full blur-[100px]"></div>
+
+      <div className="w-full max-w-md z-10">
+        <div className="text-center mb-10">
+          <h1 className="text-5xl font-black tracking-tighter mb-2">
+            MI <span className="text-red-600">ESPACIO</span>
+          </h1>
+          <p className="text-zinc-500 uppercase tracking-[0.2em] text-xs">Plataforma de Gestión de Clientes</p>
+        </div>
+
+        <div className={`bg-zinc-950 border border-zinc-800 p-8 rounded-2xl shadow-2xl relative overflow-hidden ${error ? 'border-red-600 animate-shake' : 'hover:border-zinc-700'} transition-colors duration-300`}>
+          {loading && (
+             <div className="absolute top-0 left-0 w-full h-1 bg-zinc-800 overflow-hidden">
+               <div className="h-full bg-red-600 animate-progress origin-left w-full"></div>
+             </div>
+          )}
+
+          <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+            Identifícate
+            <div className="h-1 w-1 bg-red-600 rounded-full"></div>
+          </h2>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-xs text-zinc-500 font-bold ml-1 uppercase">Usuario</label>
+              <div className="relative group">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-red-500 transition-colors" size={18} />
+                <input 
+                  type="text" 
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full bg-black border border-zinc-800 rounded-xl py-3 pl-12 pr-4 text-white placeholder-zinc-700 outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-all"
+                  placeholder="Nombre de usuario"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs text-zinc-500 font-bold ml-1 uppercase">Contraseña</label>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-red-500 transition-colors" size={18} />
+                <input 
+                  type={showPassword ? 'text' : 'password'} 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-black border border-zinc-800 rounded-xl py-3 pl-12 pr-12 text-white placeholder-zinc-700 outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-all"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors focus:outline-none"
+                  tabIndex="-1" // Evitar que el tabulador se detenga aquí si se prefiere solo interacción con click
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl mt-4 transition-all transform active:scale-[0.98] shadow-lg shadow-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+            >
+              {loading ? 'Accediendo...' : (
+                <>
+                  Entrar a mi espacio <ArrowRight size={18} />
+                </>
+              )}
+            </button>
+          </form>
+
+          {error && (
+            <p className="mt-4 text-center text-red-500 text-sm font-medium animate-pulse">
+              Credenciales incorrectas. Inténtalo de nuevo.
+            </p>
+          )}
+        </div>
+        
+        <p className="text-center mt-8 text-zinc-600 text-xs">
+          &copy; 2025 Agencia Social Media. Todos los derechos reservados.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================
+// DASHBOARD CLIENTE (ALACANT) - Estilo Naranja
+// ==========================================
+function AlacantDashboard({ onLogout }) {
+  const [activeTab, setActiveTab] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // Scroll al contenido cuando cambia la tab
   const handleTabChange = (tab) => {
     if (activeTab === tab) {
       setActiveTab(null);
@@ -74,77 +229,23 @@ export default function App() {
       : 'bg-white shadow-orange-100 border-orange-100',
     subText: isDarkMode ? 'text-zinc-400' : 'text-gray-500',
     subTextLight: isDarkMode ? 'text-zinc-500' : 'text-gray-400',
-    emptyState: isDarkMode ? 'text-zinc-600' : 'text-gray-300',
-    input: isDarkMode 
-      ? 'bg-zinc-900 border-zinc-700 text-white focus:border-orange-500' 
-      : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-orange-500'
+    emptyState: isDarkMode ? 'text-zinc-600' : 'text-gray-300'
   };
 
-  // --- PANTALLA DE LOGIN ---
-  if (!isAuthenticated) {
-    return (
-      <div className={`min-h-screen flex items-center justify-center p-4 transition-colors duration-700 ${theme.bg} ${theme.selection}`}>
-        <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
-          body { font-family: 'Montserrat', sans-serif; }
-          .animate-shake {
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-          }
-          @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
-          }
-        `}</style>
-        
-        {/* Fondo decorativo */}
-        <div className={`absolute top-0 left-0 w-full h-full overflow-hidden z-0`}>
-           <div className={`absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full filter blur-[120px] opacity-20 animate-float ${theme.blob1}`}></div>
-           <div className={`absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full filter blur-[120px] opacity-10 animate-float ${theme.blob2}`}></div>
-        </div>
-
-        <div className={`relative z-10 w-full max-w-md p-8 rounded-3xl shadow-2xl border flex flex-col items-center text-center ${theme.logoBox} ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'} transition-all duration-1000`}>
-          <div className="mb-6 bg-orange-500/10 p-4 rounded-full text-orange-500 border border-orange-500/20">
-            <Lock size={32} />
-          </div>
-          
-          <h1 className={`text-2xl font-bold mb-2 ${theme.text}`}>Bienvenido, Alacant Águilas</h1>
-          <p className={`text-sm mb-8 ${theme.subText}`}>Introduce tu contraseña de acceso para ver el panel.</p>
-
-          <form onSubmit={handleLogin} className="w-full space-y-4">
-            <div className={`relative ${loginError ? 'animate-shake' : ''}`}>
-              <input 
-                type="password" 
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-                placeholder="Contraseña"
-                className={`w-full px-4 py-3 rounded-xl border outline-none transition-all ${theme.input} ${loginError ? 'border-red-500 text-red-500 placeholder-red-400' : ''}`}
-              />
-            </div>
-            
-            <button 
-              type="submit"
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-orange-500/30 flex justify-center items-center gap-2 group"
-            >
-              <span>Acceder</span>
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform"/>
-            </button>
-          </form>
-          
-          <p className="mt-6 text-xs text-zinc-500">
-            Área protegida por Agencia Social Media
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // --- DASHBOARD PRINCIPAL ---
   return (
-    <div className={`min-h-screen font-sans transition-colors duration-700 ${theme.bg} ${theme.text} ${theme.selection} ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`min-h-screen font-sans transition-colors duration-700 animate-in fade-in zoom-in-95 duration-500 ${theme.bg} ${theme.text} ${theme.selection}`}>
       
-      {/* Botón Toggle Dark/Light Mode */}
+      {/* Botones de Control (Top Bar) */}
+      <div className="absolute top-6 right-6 z-50 flex gap-3">
+         <button 
+          onClick={onLogout}
+          className={`p-3 rounded-full transition-all duration-300 ${isDarkMode ? 'bg-zinc-800 text-red-400 hover:bg-zinc-700' : 'bg-white text-red-500 hover:bg-red-50 shadow-md'}`}
+          title="Cerrar Sesión"
+        >
+          <LogOut size={20} />
+        </button>
+      </div>
+
       <button 
         onClick={() => setIsDarkMode(!isDarkMode)}
         className={`absolute top-6 left-6 z-50 p-3 rounded-full transition-all duration-300 ${
@@ -152,7 +253,7 @@ export default function App() {
             ? 'bg-zinc-800 text-orange-400 hover:bg-zinc-700 border border-zinc-700' 
             : 'bg-white text-orange-500 shadow-lg shadow-orange-100 hover:bg-orange-50 border border-orange-100'
         }`}
-        title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+        title="Cambiar tema"
       >
         {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
       </button>
@@ -160,12 +261,10 @@ export default function App() {
       {/* Header / Bienvenida */}
       <header className="pt-12 pb-8 px-4 md:px-8 max-w-6xl mx-auto text-center relative overflow-hidden">
         
-        {/* Elementos decorativos de fondo */}
         <div className={`absolute top-0 left-1/4 w-64 h-64 rounded-full filter blur-[100px] opacity-20 animate-float transition-colors duration-700 ${theme.blob1}`}></div>
         <div className={`absolute bottom-0 right-1/4 w-64 h-64 rounded-full filter blur-[100px] opacity-10 animate-float transition-colors duration-700 ${theme.blob2}`} style={{animationDelay: '2s'}}></div>
 
         <div className="relative z-10 flex flex-col items-center">
-          {/* Logo Placeholder */}
           <div className={`mb-6 p-4 rounded-2xl shadow-2xl border transform transition-all hover:scale-105 duration-300 ${theme.logoBox}`}>
              <div className={`flex items-center gap-2 text-2xl font-bold tracking-wider ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                <span className="text-orange-500 text-4xl">🍦</span> HELADERÍA <span className="text-orange-500">ALACANT</span>
@@ -238,12 +337,13 @@ export default function App() {
           </div>
         )}
       </main>
-
     </div>
   );
 }
 
-// --- Componentes de Sección ---
+// ==========================================
+// SUB-COMPONENTES DEL DASHBOARD
+// ==========================================
 
 function PlanSection({ isDarkMode }) {
   const styles = {
@@ -320,7 +420,6 @@ function PlanSection({ isDarkMode }) {
         </h3>
         
         <div className="grid md:grid-cols-2 gap-6">
-           {/* Plan Medio */}
            <UpgradeCard 
              title="Plan Medio" 
              price="120€" 
@@ -329,8 +428,6 @@ function PlanSection({ isDarkMode }) {
              isDarkMode={isDarkMode}
              isComingSoon={true}
            />
-           
-           {/* Plan Asistencia Completa */}
            <UpgradeCard 
              title="Asistencia Completa" 
              price="290€" 
@@ -381,7 +478,6 @@ function UpgradeCard({ title, price, icon, description, features = [], isDarkMod
       <h3 className={`text-xl font-bold mb-2 ${styles.title}`}>{title}</h3>
       <p className={`text-sm mb-6 h-10 ${styles.desc}`}>{description}</p>
 
-      {/* Contenido normal (oculto si isComingSoon) o Bloqueo */}
       {isComingSoon ? (
         <div className={`absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center backdrop-blur-sm ${styles.overlay}`}>
           <div className="mb-4 bg-orange-500/10 p-4 rounded-full text-orange-500 animate-pulse">
@@ -399,7 +495,6 @@ function UpgradeCard({ title, price, icon, description, features = [], isDarkMod
               <FeatureItem key={idx} text={feat} isDarkMode={isDarkMode} />
             ))}
           </div>
-
           <button className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${styles.button}`}>
             Me interesa
           </button>
@@ -423,7 +518,6 @@ function ReportSection({ isDarkMode }) {
 
   return (
     <div className={`rounded-3xl p-8 md:p-12 text-center shadow-2xl border animate-in fade-in slide-in-from-bottom-4 duration-500 relative overflow-hidden transition-colors duration-300 ${styles.card}`}>
-       {/* Background accent */}
        <div className={`absolute top-0 right-0 w-32 h-32 bg-orange-500 rounded-bl-full ${styles.accent}`}></div>
 
        <div className="relative z-10 max-w-lg mx-auto">
@@ -450,7 +544,6 @@ function ScheduleSection({ isDarkMode }) {
     header: isDarkMode ? 'bg-zinc-800/50 border-zinc-800 text-zinc-200' : 'bg-gray-50 border-gray-100 text-gray-700',
     link: isDarkMode ? 'text-orange-400 hover:text-orange-300' : 'text-orange-500 hover:text-orange-600',
     iframeContainer: isDarkMode ? 'bg-zinc-800' : 'bg-gray-100',
-    // Filtro para intentar oscurecer el iframe en modo dark, no perfecto pero mejor
     iframeFilter: isDarkMode ? { filter: 'invert(1) hue-rotate(180deg)', opacity: 0.9 } : {}
   };
 
@@ -492,8 +585,6 @@ function HelpSection({ isDarkMode }) {
 
   return (
     <div className="grid md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      
-      {/* Columna FAQ */}
       <div className="md:col-span-2 space-y-4">
         <h2 className={`text-xl font-bold mb-4 ${styles.title}`}>Preguntas Frecuentes</h2>
         <FaqItem 
@@ -501,15 +592,11 @@ function HelpSection({ isDarkMode }) {
           answer="No publicamos poco, publicamos estratégico. En el entorno actual, la saturación es real. Parece que publicar mucho va a ser mejor, pero a menudo cansa a la audiencia o el algoritmo lo penaliza como spam. Nuestras publicaciones están programadas estudiando los días y horas de máxima audiencia y alcance para garantizar los mejores resultados con cada pieza de contenido."
           isDarkMode={isDarkMode}
         />
-        {/* Se pueden añadir más FAQs aquí */}
       </div>
-
-      {/* Columna Contacto */}
       <div className="md:col-span-1">
         <div className={`bg-gradient-to-br rounded-3xl p-6 text-white shadow-lg border ${styles.card}`}>
           <h3 className="text-lg font-bold mb-2">Contacto Directo</h3>
           <p className="text-orange-100 text-sm mb-6">Estamos a un mensaje de distancia para cualquier urgencia.</p>
-          
           <div className="space-y-4">
             <a href="https://wa.me/34000000000" className={`flex items-center gap-3 transition p-3 rounded-xl backdrop-blur-sm cursor-pointer border ${styles.waButton}`}>
               <MessageCircle className="shrink-0" />
@@ -518,7 +605,6 @@ function HelpSection({ isDarkMode }) {
                 <p className="font-mono">XXX XXX XXX</p>
               </div>
             </a>
-            
             <div className="flex items-center gap-3 p-3 opacity-60">
               <Phone size={18}/>
               <span className="text-sm">Lunes a Viernes 9:00 - 18:00</span>
@@ -529,8 +615,6 @@ function HelpSection({ isDarkMode }) {
     </div>
   );
 }
-
-// --- Componentes UI Auxiliares ---
 
 function NavButton({ id, title, icon, desc, active, onClick, isDarkMode }) {
   const styles = {
@@ -563,8 +647,6 @@ function NavButton({ id, title, icon, desc, active, onClick, isDarkMode }) {
       </div>
       <h3 className={`font-bold text-lg mb-1 ${!active && styles.titleHover}`}>{title}</h3>
       <p className={`text-xs ${active ? styles.descActive : styles.descInactive}`}>{desc}</p>
-      
-      {/* Indicador visual de selección */}
       {active && (
         <div className={`absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 rotate-45 ${isDarkMode ? 'bg-orange-600' : 'bg-orange-500'}`}></div>
       )}
@@ -590,7 +672,6 @@ function FeatureItem({ text, isDarkMode }) {
 
 function FaqItem({ question, answer, isDarkMode }) {
   const [isOpen, setIsOpen] = useState(false);
-
   const styles = {
     container: isDarkMode 
       ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700' 
@@ -603,22 +684,12 @@ function FaqItem({ question, answer, isDarkMode }) {
 
   return (
     <div className={`rounded-2xl border overflow-hidden shadow-sm hover:shadow-md transition-all ${styles.container}`}>
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-5 text-left"
-      >
+      <button onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between p-5 text-left">
         <span className={`font-bold ${styles.question}`}>{question}</span>
         {isOpen ? <ChevronUp className="text-orange-500" /> : <ChevronDown className={styles.icon} />}
       </button>
-      
-      <div 
-        className={`px-5 text-sm leading-relaxed overflow-hidden transition-all duration-300 ease-in-out ${styles.answer}
-          ${isOpen ? 'max-h-96 pb-5 opacity-100' : 'max-h-0 opacity-0'}
-        `}
-      >
-        <div className={`pl-4 border-l-2 ${styles.border}`}>
-          {answer}
-        </div>
+      <div className={`px-5 text-sm leading-relaxed overflow-hidden transition-all duration-300 ease-in-out ${styles.answer} ${isOpen ? 'max-h-96 pb-5 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className={`pl-4 border-l-2 ${styles.border}`}>{answer}</div>
       </div>
     </div>
   );
